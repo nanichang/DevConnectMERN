@@ -5,6 +5,7 @@ const passport = require('passport');
 
 // Load Profile Model
 const Profile = require('../../models/Profile');
+const validateProfileInput = require('../../validation/profile')
 
 // Load User Model
 const User = require('../../models/User');
@@ -22,6 +23,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
   const errors = {};
 
   Profile.findOne({ user: req.user.id })
+  .populate('user', ['name', 'avatar'])
   .then(profile => {
     if(!profile) {
       errors.noprofile = 'There is no profile for this user';
@@ -37,11 +39,20 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 // @desc    Create/Edit User Profile 
 // @access  Private
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+  const { errors, isValid } = validateProfileInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    // Return any errors with status 400
+    return res.status(400).json(errors);
+  };
+
   // get fields
   const profileFields = {};
   profileFields.user = req.user.id;
   if(req.body.handle) profileFields.handle = req.body.handle;
-  if(req.body.comapny) profileFields.comapny = req.body.comapny;
+  if(req.body.company) profileFields.company = req.body.company;
   if(req.body.website) profileFields.website = req.body.website;
   if(req.body.location) profileFields.location = req.body.location;
   if(req.body.bio) profileFields.bio = req.body.bio;
@@ -68,7 +79,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
     .then(profile => {
       if(profile) {
         // Update Profile
-        Profile.findByIdAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true })
+        Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true })
           .then(profile => res.json(profile));
       }
       else {
