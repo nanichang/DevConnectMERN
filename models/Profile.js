@@ -7,6 +7,7 @@ const ProfileSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
+
   handle: {
     type: String,
     required: true,
@@ -38,7 +39,7 @@ const ProfileSchema = new Schema({
 
   experience: [{
     title: { 
-      Type: String,
+      type: String,
       required: true
     },
     company: {
@@ -46,14 +47,14 @@ const ProfileSchema = new Schema({
       required: true
     },
     location: {
-      type: String,
+      type: String
     },
     from: {
       type: Date,
       required: true
     },
     to: {
-      type: Date,
+      type: Date
     },
     current: {
       type: Boolean,
@@ -66,7 +67,7 @@ const ProfileSchema = new Schema({
 
   education: [{
     school: {
-      Type: String,
+      type: String,
       required: true
     },
     degree: {
@@ -102,7 +103,7 @@ const ProfileSchema = new Schema({
     facebook: {
       type: String
     },
-    linkdin: {
+    linkedin: {
       type: String
     },
     instagram: {
